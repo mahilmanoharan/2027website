@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { SecondaryButton } from "@/components/Buttons/SecondaryButton";
+import { FadeIn } from "@/components/Scroll/FadeIn";
 import { SectionHeading } from "@/components/UI/SectionHeading";
 import { About as AboutContent } from "@/lib/content";
 
@@ -11,7 +12,7 @@ export function About({ about }: AboutProps) {
   return (
     <section aria-labelledby="about-heading" className="w-full bg-brown text-cream">
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 md:grid-cols-2 md:py-28">
-        <div className="space-y-5">
+        <FadeIn className="space-y-5">
           <SectionHeading id="about-heading" title={about.title} light />
           {about.paragraphs.map((paragraph) => (
             <p key={paragraph} className="text-lg leading-relaxed">
@@ -30,14 +31,16 @@ export function About({ about }: AboutProps) {
               </SecondaryButton>
             ))}
           </div>
-        </div>
-        <Image
-          src="/art/spot/about.webp"
-          alt=""
-          width={1600}
-          height={1200}
-          className="h-auto w-full rounded-3xl"
-        />
+        </FadeIn>
+        <FadeIn>
+          <Image
+            src="/art/spot/about.webp"
+            alt=""
+            width={1600}
+            height={1200}
+            className="h-auto w-full rounded-3xl"
+          />
+        </FadeIn>
       </div>
     </section>
   );

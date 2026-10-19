@@ -1,5 +1,11 @@
+"use client";
+
+import { useRef } from "react";
 import Image from "next/image";
+import * as m from "motion/react-m";
+import { LazyMotion, domMin, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { SecondaryButton } from "@/components/Buttons/SecondaryButton";
+import { useMediaQuery } from "@/components/Scroll/useMediaQuery";
 import { SectionHeading } from "@/components/UI/SectionHeading";
 import { Journey, JourneyPanel as JourneyPanelContent } from "@/lib/content";
 
@@ -7,30 +13,89 @@ interface HorizontalJourneyProps {
   journey: Journey;
 }
 
+// The server always renders the vertical stack, so phones, reduced motion and
+// no-JS all get it. Desktops switch to the pinned strip after hydration; the
+// section is below the fold, so the switch is never on screen.
 export function HorizontalJourney({ journey }: HorizontalJourneyProps) {
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const reduceMotion = useReducedMotion();
+  const pinned = isDesktop && !reduceMotion;
+
   return (
     <section aria-labelledby="journey-heading" className="w-full bg-cream text-brown">
       <div className="mx-auto max-w-7xl px-4 pt-20">
         <SectionHeading id="journey-heading" title={journey.title} />
       </div>
-      <ol className="mx-auto max-w-7xl space-y-10 px-4 py-12 md:py-16">
-        {journey.panels.map((panel, index) => (
-          <JourneyPanel key={panel.title} panel={panel} index={index} />
-        ))}
-      </ol>
+      {pinned ? (
+        <PinnedStrip panels={journey.panels} />
+      ) : (
+        <ol className="mx-auto max-w-7xl space-y-10 px-4 py-12 md:py-16">
+          {journey.panels.map((panel, index) => (
+            <li key={panel.title}>
+              <JourneyPanel panel={panel} index={index} />
+            </li>
+          ))}
+        </ol>
+      )}
     </section>
+  );
+}
+
+interface PinnedStripProps {
+  panels: JourneyPanelContent[];
+}
+
+// Separate component so useScroll mounts with its target already attached.
+function PinnedStrip({ panels }: PinnedStripProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const count = panels.length;
+  // Pinning starts when the strip reaches the bottom of the 64px nav.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 64px", "end end"] });
+  // Slide until the last panel fills the frame: -75% of the strip for 4 panels.
+  const x = useTransform(scrollYProgress, [0, 1], ["0%", `-${((count - 1) / count) * 100}%`]);
+
+  return (
+    <div ref={ref} className="relative" style={{ height: `${count * 100}vh` }}>
+      <div className="sticky top-16 h-[calc(100vh-4rem)] overflow-hidden">
+        {/* domMin supplies the DOM renderer that lets m elements follow MotionValues. */}
+        <LazyMotion features={domMin}>
+          <m.ol
+            style={{ x, width: `${count * 100}%` }}
+            className="flex h-full will-change-transform"
+          >
+            {panels.map((panel, index) => (
+              <li
+                key={panel.title}
+                className="h-full shrink-0 px-4 py-8"
+                style={{ width: `${100 / count}%` }}
+              >
+                <div className="mx-auto h-full max-w-7xl">
+                  <JourneyPanel panel={panel} index={index} fill />
+                </div>
+              </li>
+            ))}
+          </m.ol>
+        </LazyMotion>
+      </div>
+    </div>
   );
 }
 
 interface JourneyPanelProps {
   panel: JourneyPanelContent;
   index: number;
+  /** Fill the pinned frame instead of keeping the art's 16:10 shape. */
+  fill?: boolean;
 }
 
 // Art is decorative; the panel's words are real HTML on top of it.
-function JourneyPanel({ panel, index }: JourneyPanelProps) {
+function JourneyPanel({ panel, index, fill = false }: JourneyPanelProps) {
   return (
-    <li className="relative overflow-hidden rounded-3xl bg-cream-light md:aspect-[16/10]">
+    <article
+      className={`relative overflow-hidden rounded-3xl bg-cream-light ${
+        fill ? "h-full" : "md:aspect-[16/10]"
+      }`}
+    >
       <Image
         src={`/art/journey/panel-${index + 1}.webp`}
         alt=""
@@ -50,6 +115,6 @@ function JourneyPanel({ panel, index }: JourneyPanelProps) {
           </div>
         )}
       </div>
-    </li>
+    </article>
   );
 }

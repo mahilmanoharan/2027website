@@ -1,5 +1,6 @@
 import { PlusIcon } from "@heroicons/react/16/solid";
 import { SecondaryButton } from "@/components/Buttons/SecondaryButton";
+import { FadeIn } from "@/components/Scroll/FadeIn";
 import { SectionHeading } from "@/components/UI/SectionHeading";
 import { FAQPreview as FAQPreviewContent } from "@/lib/content";
 import { formatContent } from "@/utils/helpers";
@@ -16,7 +17,7 @@ export function FAQPreview({ faq }: FAQPreviewProps) {
     <section aria-labelledby="faq-heading" className="w-full bg-cream text-brown">
       <div className="mx-auto max-w-3xl px-4 py-20">
         <SectionHeading id="faq-heading" title={faq.title} />
-        <div className="mt-8 space-y-3">
+        <FadeIn className="mt-8 space-y-3">
           {faq.items.slice(0, PREVIEW_COUNT).map((item) => (
             <details key={item.question} className="group rounded-2xl bg-cream-light shadow-sm">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 font-bold [&::-webkit-details-marker]:hidden">
@@ -26,7 +27,7 @@ export function FAQPreview({ faq }: FAQPreviewProps) {
               <div className="px-5 pb-5">{formatContent(item.answer)}</div>
             </details>
           ))}
-        </div>
+        </FadeIn>
         <div className="mt-8">
           <SecondaryButton href={faq.link.href} textColor="text-brown">
             {faq.link.label}

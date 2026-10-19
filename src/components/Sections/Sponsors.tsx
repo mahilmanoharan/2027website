@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { FadeIn } from "@/components/Scroll/FadeIn";
 import { SectionHeading } from "@/components/UI/SectionHeading";
 import { Sponsors as SponsorsContent } from "@/lib/content";
 import { Sponsor, Tier } from "@/utils/Types";
@@ -19,19 +20,21 @@ export function Sponsors({ sponsors }: SponsorsProps) {
     <section id="sponsors" aria-labelledby="sponsors-heading" className="w-full bg-cream-light text-brown">
       <div className="mx-auto max-w-7xl px-4 py-20 text-center">
         <SectionHeading id="sponsors-heading" title={sponsors.title} />
-        <ul className="mt-10 flex flex-wrap items-center justify-center gap-6 md:gap-10">
-          {sponsors.items.map((sponsor) => (
-            <li key={sponsor.name}>
-              {sponsor.url ? (
-                <a href={sponsor.url} target="_blank" rel="noopener noreferrer" className="block">
+        <FadeIn>
+          <ul className="mt-10 flex flex-wrap items-center justify-center gap-6 md:gap-10">
+            {sponsors.items.map((sponsor) => (
+              <li key={sponsor.name}>
+                {sponsor.url ? (
+                  <a href={sponsor.url} target="_blank" rel="noopener noreferrer" className="block">
+                    <SponsorLogo sponsor={sponsor} />
+                  </a>
+                ) : (
                   <SponsorLogo sponsor={sponsor} />
-                </a>
-              ) : (
-                <SponsorLogo sponsor={sponsor} />
-              )}
-            </li>
-          ))}
-        </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        </FadeIn>
       </div>
     </section>
   );
