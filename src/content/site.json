@@ -1,0 +1,96 @@
+{
+  "settings": {
+    "name": "Pearl Hacks",
+    "tagline": "[TAGLINE]",
+    "eventDates": "[EVENT DATES]",
+    "eventStart": null,
+    "location": "UNC-Chapel Hill",
+    "apply": { "label": "Apply", "href": "#" },
+    "nav": [
+      { "label": "About", "href": "/about" },
+      { "label": "Programs", "href": "/programs" },
+      { "label": "FAQ", "href": "/faq" },
+      { "label": "Resources", "href": "/resources" },
+      { "label": "Schedule", "href": "/schedule" }
+    ],
+    "mlhBadge": {
+      "href": "https://mlh.io/na?utm_source=na-hackathon&utm_medium=TrustBadge&utm_campaign=2026-season&utm_content=white",
+      "image": "https://s3.amazonaws.com/logged-assets/trust-badge/2026/mlh-trust-badge-2026-white.svg",
+      "alt": "Major League Hacking 2026 Hackathon Season"
+    }
+  },
+  "about": {
+    "title": "What is Pearl Hacks?",
+    "paragraphs": [
+      "Pearl Hacks is a hackathon that celebrates women and gender-nonconforming individuals in tech. In alignment with university guidelines, the event is open to all participants, while maintaining a supportive environment that centers historically underrepresented genders in technology. We especially cater to first-time hackers who are looking for a supportive environment to explore technology.",
+      "Participants work in teams to create incredible projects in 24 hours with the help of excellent mentors, workshops, and tech talks. All the while, they’ll get to meet some fantastic people, enjoy fun games, collect swag, and eat free food."
+    ],
+    "links": [
+      { "label": "Learn more", "href": "/about" },
+      { "label": "Show past projects", "href": "https://pearlhacks2025.devpost.com/" }
+    ]
+  },
+  "journey": {
+    "title": "[JOURNEY HEADING]",
+    "panels": [
+      { "title": "Tracks", "body": "[TRACKS COPY]", "link": { "label": "See programs", "href": "/programs" } },
+      { "title": "Prizes", "body": "[PRIZES COPY]", "link": null },
+      { "title": "Workshops", "body": "[WORKSHOPS COPY]", "link": { "label": "See schedule", "href": "/schedule" } },
+      { "title": "Timeline", "body": "[TIMELINE COPY]", "link": { "label": "See schedule", "href": "/schedule" } }
+    ]
+  },
+  "stats": {
+    "title": "By the numbers",
+    "items": [
+      { "value": "[STAT 1]", "label": "[STAT 1 LABEL]" },
+      { "value": "[STAT 2]", "label": "[STAT 2 LABEL]" },
+      { "value": "[STAT 3]", "label": "[STAT 3 LABEL]" },
+      { "value": "[STAT 4]", "label": "[STAT 4 LABEL]" }
+    ],
+    "photos": [{ "alt": "[PHOTO 1 ALT TEXT]" }, { "alt": "[PHOTO 2 ALT TEXT]" }]
+  },
+  "sponsors": {
+    "title": "Sponsors",
+    "items": [
+      { "name": "[SPONSOR 1]", "url": "", "img_url": "", "tier": "pearl" },
+      { "name": "[SPONSOR 2]", "url": "", "img_url": "", "tier": "gold" },
+      { "name": "[SPONSOR 3]", "url": "", "img_url": "", "tier": "gold" },
+      { "name": "[SPONSOR 4]", "url": "", "img_url": "", "tier": "silver" },
+      { "name": "[SPONSOR 5]", "url": "", "img_url": "", "tier": "silver" },
+      { "name": "[SPONSOR 6]", "url": "", "img_url": "", "tier": "silver" }
+    ]
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "link": { "label": "See all FAQs", "href": "/faq" },
+    "items": [
+      { "question": "[QUESTION 1]", "answer": "[ANSWER 1]", "category": "General FAQs" },
+      { "question": "[QUESTION 2]", "answer": "[ANSWER 2]", "category": "General FAQs" },
+      { "question": "[QUESTION 3]", "answer": "[ANSWER 3]", "category": "General FAQs" },
+      { "question": "[QUESTION 4]", "answer": "[ANSWER 4]", "category": "General FAQs" },
+      { "question": "[QUESTION 5]", "answer": "[ANSWER 5]", "category": "General FAQs" },
+      { "question": "[QUESTION 6]", "answer": "[ANSWER 6]", "category": "General FAQs" }
+    ]
+  },
+  "footer": {
+    "columns": [
+      {
+        "title": "Keep up with us",
+        "body": "Join [our mailing list](https://docs.google.com/forms/d/e/1FAIpQLSeA1H_oTL2U6rXnAEDqQ3t2CeP0qwEmRBZnbMIMb9ODcuL72w/viewform)!"
+      },
+      {
+        "title": "Administration",
+        "body": "Pearl Hacks abides by [the MLH Code of Conduct](https://github.com/MLH/mlh-policies/blob/main/code-of-conduct.md). If you have any questions or feedback, please contact us at [questions@pearlhacks.com](mailto:questions@pearlhacks.com)."
+      },
+      {
+        "title": "Inclusivity Statement",
+        "body": "Pearl Hacks is an event designed to uplift women and gender non-conforming students in tech. We expect all mentors, volunteers, participants, directors, sponsors, judges, and visitors to be respectful of our participants' identities and expressions."
+      }
+    ],
+    "socials": [
+      { "label": "LinkedIn", "href": "https://www.linkedin.com/company/pearl-hacks/", "icon": "linkedin" },
+      { "label": "GitHub", "href": "https://github.com/pearlhacks", "icon": "github" },
+      { "label": "Email", "href": "mailto:questions@pearlhacks.com", "icon": "email" }
+    ]
+  }
+}
