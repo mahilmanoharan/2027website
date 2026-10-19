@@ -99,7 +99,7 @@ export default function Page() {
                 Pearl Hacks is an event designed to uplift and center women and
                 gender non-conforming individuals in tech. We expect all of our
                 mentors, volunteers, participants, directors, sponsors, judges,
-                and visitors to be respectful of our participants' gender
+                and visitors to be respectful of our participants&apos; gender
                 identities and expressions.
               </p>
             </div>

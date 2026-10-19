@@ -34,7 +34,7 @@ export function Footer({ backgroundColor = "generic" }: FooterProps) {
             Pearl Hacks is an event designed to uplift women and gender
             non-conforming students in tech. We expect all mentors, volunteers,
             participants, directors, sponsors, judges, and visitors to be
-            respectful of our participants' identities and expressions.
+            respectful of our participants&apos; identities and expressions.
           </FooterContent>
         </div>
         <div className="flex  py-2 md:py-5 text-brown-footer w-full flex-col justify-start md:flex-row md:justify-between items-center">
