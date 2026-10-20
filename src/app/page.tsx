@@ -28,8 +28,10 @@ export default async function Home() {
       getFooter(),
     ]);
 
+  // One visible focus ring for every link and button on the page. Dark
+  // sections switch --focus-ring to cream so it shows on brown.
   return (
-    <div className="relative w-full bg-cream text-brown">
+    <div className="relative w-full bg-cream text-brown [--focus-ring:theme(colors.brown.DEFAULT)] [&_:focus-visible]:outline [&_:focus-visible]:outline-[3px] [&_:focus-visible]:outline-offset-2 [&_:focus-visible]:outline-[color:var(--focus-ring)]">
       <Nav settings={settings} />
       <ParallaxHero settings={settings} />
       <About about={about} />

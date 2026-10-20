@@ -32,21 +32,28 @@ export function Countdown({ start }: CountdownProps) {
   ];
 
   // The server doesn't know the time, so it reserves the space invisibly and
-  // the hero doesn't shift when the numbers arrive.
+  // the hero doesn't shift when the numbers arrive. Without JavaScript the
+  // numbers never arrive, so the noscript style gives the space back.
   return (
-    <div
-      role="timer"
-      aria-label="Time until the event starts"
-      className={`mt-4 flex gap-4 ${now === null ? "invisible" : ""}`}
-    >
-      {units.map((unit) => (
-        <div key={unit.label} className="text-center">
-          <p className="font-sans text-3xl font-bold tabular-nums">
-            {String(unit.value).padStart(2, "0")}
-          </p>
-          <p className="text-xs font-bold uppercase">{unit.label}</p>
-        </div>
-      ))}
-    </div>
+    <>
+      <noscript>
+        <style>{"[data-countdown]{display:none}"}</style>
+      </noscript>
+      <div
+        data-countdown
+        role="timer"
+        aria-label="Time until the event starts"
+        className={`mt-4 flex gap-4 ${now === null ? "invisible" : ""}`}
+      >
+        {units.map((unit) => (
+          <div key={unit.label} className="text-center">
+            <p className="font-sans text-3xl font-bold tabular-nums">
+              {String(unit.value).padStart(2, "0")}
+            </p>
+            <p className="text-xs font-bold uppercase">{unit.label}</p>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }

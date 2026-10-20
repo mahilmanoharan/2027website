@@ -10,7 +10,10 @@ interface AboutProps {
 
 export function About({ about }: AboutProps) {
   return (
-    <section aria-labelledby="about-heading" className="w-full bg-brown text-cream">
+    <section
+      aria-labelledby="about-heading"
+      className="w-full bg-brown text-cream [--focus-ring:theme(colors.cream.DEFAULT)]"
+    >
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 md:grid-cols-2 md:py-28">
         <FadeIn className="space-y-5">
           <SectionHeading id="about-heading" title={about.title} light />

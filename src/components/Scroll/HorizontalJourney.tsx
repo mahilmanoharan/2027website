@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { FocusEvent, useRef } from "react";
 import Image from "next/image";
 import * as m from "motion/react-m";
 import { LazyMotion, domMin, useReducedMotion, useScroll, useTransform } from "motion/react";
@@ -45,27 +45,51 @@ interface PinnedStripProps {
   panels: JourneyPanelContent[];
 }
 
+// Height of the sticky nav, which the strip pins underneath.
+const NAV_HEIGHT = 64;
+
 // Separate component so useScroll mounts with its target already attached.
 function PinnedStrip({ panels }: PinnedStripProps) {
   const ref = useRef<HTMLDivElement>(null);
   const count = panels.length;
   // Pinning starts when the strip reaches the bottom of the 64px nav.
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 64px", "end end"] });
+  const { scrollYProgress } = useScroll({ target: ref, offset: [`start ${NAV_HEIGHT}px`, "end end"] });
   // Slide until the last panel fills the frame: -75% of the strip for 4 panels.
   const x = useTransform(scrollYProgress, [0, 1], ["0%", `-${((count - 1) / count) * 100}%`]);
 
+  // Tabbing to a link in an off-screen panel scrolls the page to the point
+  // where that panel fills the frame. Waits a frame so it runs after the
+  // browser's own scroll-into-view.
+  const showFocusedPanel = (event: FocusEvent<HTMLOListElement>) => {
+    const item = (event.target as HTMLElement).closest<HTMLElement>("[data-panel]");
+    if (!item) return;
+    const progress = count > 1 ? Number(item.dataset.panel) / (count - 1) : 0;
+    requestAnimationFrame(() => {
+      const outer = ref.current;
+      if (!outer) return;
+      const top = outer.getBoundingClientRect().top + window.scrollY;
+      const start = top - NAV_HEIGHT;
+      const end = top + outer.offsetHeight - window.innerHeight;
+      window.scrollTo({ top: start + progress * (end - start), behavior: "smooth" });
+    });
+  };
+
   return (
     <div ref={ref} className="relative" style={{ height: `${count * 100}vh` }}>
-      <div className="sticky top-16 h-[calc(100vh-4rem)] overflow-hidden">
+      {/* clip, not hidden: a hidden box is still scrollable, and focusing an
+          off-screen link would scroll it sideways out of step with the strip. */}
+      <div className="sticky top-16 h-[calc(100vh-4rem)] overflow-clip">
         {/* domMin supplies the DOM renderer that lets m elements follow MotionValues. */}
         <LazyMotion features={domMin}>
           <m.ol
+            onFocus={showFocusedPanel}
             style={{ x, width: `${count * 100}%` }}
             className="flex h-full will-change-transform"
           >
             {panels.map((panel, index) => (
               <li
                 key={panel.title}
+                data-panel={index}
                 className="h-full shrink-0 px-4 py-8"
                 style={{ width: `${100 / count}%` }}
               >

@@ -24,7 +24,10 @@ export function FAQPreview({ faq }: FAQPreviewProps) {
                 <span>{item.question}</span>
                 <PlusIcon className="h-5 w-5 shrink-0 transition-transform group-open:rotate-45" />
               </summary>
-              <div className="px-5 pb-5">{formatContent(item.answer)}</div>
+              {/* Links share the text colour, so the underline is what marks them. */}
+              <div className="px-5 pb-5 [&_a]:underline [&_a]:underline-offset-2">
+                {formatContent(item.answer)}
+              </div>
             </details>
           ))}
         </FadeIn>

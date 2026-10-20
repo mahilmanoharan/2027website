@@ -51,9 +51,26 @@ export function ParallaxHero({ settings }: ParallaxHeroProps) {
   return (
     <section
       ref={ref}
+      id="content"
       aria-labelledby="hero-title"
       className="relative isolate flex min-h-[calc(100svh-4rem)] w-full items-center overflow-hidden bg-cream"
     >
+      {/* The back layer is the LCP image. React hoists these into <head>, so the
+          browser asks for it before the scripts; media picks one per device. */}
+      <link
+        rel="preload"
+        as="image"
+        href="/art/hero/mobile.webp"
+        media="(max-width: 767px)"
+        fetchPriority="high"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href="/art/hero/layer-3-back.webp"
+        media={DESKTOP}
+        fetchPriority="high"
+      />
       {/* domMin supplies the DOM renderer that lets m elements follow MotionValues. */}
       <LazyMotion features={domMin}>
         <m.div

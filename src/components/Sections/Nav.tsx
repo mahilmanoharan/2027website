@@ -24,6 +24,13 @@ export function Nav({ settings }: NavProps) {
 
   return (
     <>
+      {/* First tab stop: lets keyboard users jump past the nav. */}
+      <a
+        href="#content"
+        className="sr-only font-sans font-bold focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-[70] focus:rounded-full focus:bg-cream focus:px-4 focus:py-2"
+      >
+        Skip to content
+      </a>
       <header className="sticky top-0 z-50 w-full bg-cream text-brown shadow-sm">
         {/* Right padding leaves room for the MLH badge hanging over the bar. */}
         <div className="relative mx-auto flex h-16 max-w-7xl items-center justify-between px-4 pr-24 md:pr-32">

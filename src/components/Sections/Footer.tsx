@@ -25,14 +25,17 @@ const SOCIAL_ICONS: Record<string, JSX.Element> = {
 
 export function Footer({ footer, name }: FooterProps) {
   return (
-    <footer className="w-full bg-brown text-cream">
+    <footer className="w-full bg-brown text-cream [--focus-ring:theme(colors.cream.DEFAULT)]">
       <Image src="/art/spot/footer.webp" alt="" width={1600} height={800} className="h-auto w-full" />
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-12">
         <div className="grid gap-8 md:grid-cols-3">
           {footer.columns.map((column) => (
             <div key={column.title} className="space-y-2">
               <h2 className="font-sans font-bold uppercase text-white break-words">{column.title}</h2>
-              <div className="break-words">{formatContent(column.body)}</div>
+              {/* Links share the text colour, so the underline is what marks them. */}
+              <div className="break-words [&_a]:underline [&_a]:underline-offset-2">
+                {formatContent(column.body)}
+              </div>
             </div>
           ))}
         </div>
