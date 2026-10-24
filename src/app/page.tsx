@@ -1,5 +1,5 @@
+import { EnvelopeIntro } from "@/components/Scroll/EnvelopeIntro";
 import { HorizontalJourney } from "@/components/Scroll/HorizontalJourney";
-import { ParallaxHero } from "@/components/Scroll/ParallaxHero";
 import { StatsPlayground } from "@/components/Scroll/StatsPlayground";
 import { About } from "@/components/Sections/About";
 import { FAQPreview } from "@/components/Sections/FAQPreview";
@@ -33,7 +33,7 @@ export default async function Home() {
   return (
     <div className="relative w-full bg-cream text-brown [--focus-ring:theme(colors.brown.DEFAULT)] [&_:focus-visible]:outline [&_:focus-visible]:outline-[3px] [&_:focus-visible]:outline-offset-2 [&_:focus-visible]:outline-[color:var(--focus-ring)]">
       <Nav settings={settings} />
-      <ParallaxHero settings={settings} />
+      <EnvelopeIntro settings={settings} />
       <About about={about} />
       <HorizontalJourney journey={journey} />
       <StatsPlayground stats={stats} />
