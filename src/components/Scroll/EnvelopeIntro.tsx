@@ -6,6 +6,7 @@ import * as m from "motion/react-m";
 import { LazyMotion, domMin, useMotionValue, useScroll, useTransform } from "motion/react";
 import { SecondaryButton } from "@/components/Buttons/SecondaryButton";
 import { Countdown } from "@/components/Scroll/Countdown";
+import { Mailbox } from "@/components/Scroll/Mailbox";
 import { Settings } from "@/lib/content";
 
 interface EnvelopeIntroProps {
@@ -15,7 +16,7 @@ interface EnvelopeIntroProps {
 // Height of the sticky nav, which the stage pins underneath.
 const NAV_HEIGHT = 64;
 
-// Without JavaScript, or with reduced motion, the envelope is skipped and the
+// Without JavaScript, or with reduced motion, the mail is skipped and the
 // letter is an ordinary hero section. One rule set serves both.
 const STATIC_LETTER =
   "[data-envelope]{height:auto}" +
@@ -23,15 +24,22 @@ const STATIC_LETTER =
   "[data-envelope-scene]{display:none}" +
   "[data-letter]{position:static;opacity:1!important;transform:none!important}";
 
-// Where each step of the opening happens, as a share of the pinned scroll.
+// Where each step happens, as a share of the pinned scroll. The envelope comes
+// out of the mailbox, rests where it lands, then opens.
 const STEPS = {
-  hint: [0, 0.06],
-  flap: [0.02, 0.22],
-  lift: [0.22, 0.45],
-  drop: [0.45, 0.72],
-  grow: [0.48, 0.8],
-  preview: [0.46, 0.56],
-  letter: [0.78, 0.92],
+  mailHint: [0, 0.04],
+  door: [0.03, 0.13],
+  emerge: [0.12, 0.3],
+  flag: [0.16, 0.24],
+  mailbox: [0.2, 0.32],
+  openHintIn: [0.28, 0.33],
+  openHintOut: [0.37, 0.42],
+  flap: [0.36, 0.49],
+  lift: [0.49, 0.64],
+  drop: [0.64, 0.82],
+  grow: [0.66, 0.87],
+  preview: [0.64, 0.71],
+  letter: [0.86, 0.95],
 } as const;
 
 // 0 before the step, 1 after it, eased out in between.
@@ -66,9 +74,12 @@ export function EnvelopeIntro({ settings }: EnvelopeIntroProps) {
     if (!stage || !paper) return;
     const measure = () => {
       // No offset parent while the static fallback hides the scene.
-      const envelope = paper.offsetParent as HTMLElement | null;
-      if (!envelope) return;
-      const paperMiddle = envelope.offsetTop + paper.offsetTop + paper.offsetHeight / 2;
+      if (!paper.offsetParent) return;
+      let paperTop = 0;
+      for (let el: HTMLElement | null = paper; el && el !== stage; el = el.offsetParent as HTMLElement | null) {
+        paperTop += el.offsetTop;
+      }
+      const paperMiddle = paperTop + paper.offsetHeight / 2;
       lift.set(paper.offsetHeight * 0.65);
       centerY.set(stage.clientHeight / 2 - paperMiddle);
       // A little extra so the paper's rounded corners land off screen.
@@ -81,7 +92,26 @@ export function EnvelopeIntro({ settings }: EnvelopeIntroProps) {
     return () => observer.disconnect();
   }, [lift, centerY, coverX, coverY]);
 
-  const hintOpacity = useTransform(progress, (p) => 1 - step(p, STEPS.hint));
+  const mailHintOpacity = useTransform(progress, (p) => 1 - step(p, STEPS.mailHint));
+  const openHintOpacity = useTransform(
+    progress,
+    (p) => step(p, STEPS.openHintIn) * (1 - step(p, STEPS.openHintOut))
+  );
+
+  const doorRotate = useTransform(progress, (p) => step(p, STEPS.door) * -100);
+  const doorZ = useTransform(doorRotate, (angle): number => (angle > -90 ? 20 : 5));
+  const flagRotate = useTransform(progress, (p) => step(p, STEPS.flag) * -90);
+  const mailboxY = useTransform(progress, (p) => `${step(p, STEPS.mailbox) * 110}vh`);
+  const mailboxOpacity = useTransform(progress, (p) => 1 - step(p, STEPS.mailbox));
+  // The envelope starts small inside the mailbox, then is pulled up and out
+  // in an arc to full size.
+  const envelopeScale = useTransform(progress, (p) => 0.28 + 0.72 * step(p, STEPS.emerge));
+  const envelopeY = useTransform(progress, (p) => {
+    const t = step(p, STEPS.emerge);
+    return `${12 * (1 - t) - 30 * Math.sin(Math.PI * t)}%`;
+  });
+  const envelopeRotate = useTransform(progress, (p) => -8 * (1 - step(p, STEPS.emerge)));
+
   const flapRotate = useTransform(progress, (p) => step(p, STEPS.flap) * 180);
   // The flap covers the paper until it stands upright, then falls behind it.
   const flapZ = useTransform(flapRotate, (angle) => (angle < 90 ? 30 : 5));
@@ -119,7 +149,7 @@ export function EnvelopeIntro({ settings }: EnvelopeIntroProps) {
       id="content"
       data-envelope
       aria-labelledby="hero-title"
-      className="relative h-[320vh] w-full bg-pink-soft"
+      className="relative h-[440vh] w-full bg-pink-soft"
     >
       <style>{`@media (prefers-reduced-motion: reduce){${STATIC_LETTER}}`}</style>
       <noscript>
@@ -139,59 +169,84 @@ export function EnvelopeIntro({ settings }: EnvelopeIntroProps) {
             aria-hidden="true"
             className="absolute inset-0 isolate flex flex-col items-center justify-center gap-8 px-4"
           >
-            {/* Top padding keeps room for the open flap and the rising paper. */}
-            <div className="w-[min(86vw,560px,calc((100svh-4rem)*0.75))] pt-[30%]">
+            <div className="w-[min(86vw,560px,calc((100svh-4rem)*0.75))]">
+              {/* Room for the open flap and the rising paper. Padding on a child,
+                  so 30% is of the envelope's width, not the stage's. */}
+              <div className="relative pt-[30%]">
+                {/* Points down at the mailbox. */}
+                <m.p
+                  style={{ opacity: mailHintOpacity }}
+                  className="absolute inset-x-0 bottom-2 text-center font-sans text-sm font-bold uppercase tracking-[0.2em] text-brown"
+                >
+                  You&rsquo;ve got mail
+                  <span className="mt-1 block animate-bounce text-lg motion-reduce:animate-none">&darr;</span>
+                </m.p>
+              </div>
+              {/* The mailbox is centered on the envelope, which starts inside it. */}
               <div className="relative aspect-[8/5] w-full">
-                {/* Inside of the envelope, behind the paper. */}
-                <m.div
-                  style={{ y: dropY, opacity: dropOpacity }}
-                  className="absolute inset-0 rounded-md bg-pink-transition"
+                <Mailbox
+                  door={doorRotate}
+                  doorZ={doorZ}
+                  flag={flagRotate}
+                  y={mailboxY}
+                  opacity={mailboxOpacity}
                 />
 
                 <m.div
-                  ref={paperRef}
-                  style={{ y: paperY, scaleX: paperScaleX, scaleY: paperScaleY }}
-                  className="absolute inset-x-[5%] bottom-[4%] top-[6%] z-10 rounded-sm bg-cream shadow-md"
-                />
-                {/* Kept apart from the paper so its text never stretches with it. */}
-                <m.div
-                  style={{ y: previewY, opacity: previewOpacity }}
-                  className="absolute inset-x-[5%] bottom-[4%] top-[6%] z-10 flex flex-col items-center pt-[6%] text-center text-brown"
+                  style={{ scale: envelopeScale, y: envelopeY, rotate: envelopeRotate }}
+                  className="absolute inset-0 z-10"
                 >
-                  <p className="font-sans text-sm italic sm:text-base">You&rsquo;re invited to</p>
-                  <p className="font-sans text-2xl font-bold uppercase sm:text-4xl">{name}</p>
-                </m.div>
-
-                {/* The pocket: side flaps with a V cut out, then the bottom flap. */}
-                <m.div style={{ y: dropY, opacity: dropOpacity }} className="absolute inset-0 z-20">
-                  <div className="absolute inset-0 rounded-md bg-pink [clip-path:polygon(0_0,50%_52%,100%_0,100%_100%,0_100%)]" />
-                  <div className="absolute inset-0 rounded-md bg-pink-accent [clip-path:polygon(0_100%,50%_42%,100%_100%)]" />
-                  <p className="absolute inset-x-0 bottom-[7%] text-center font-sans text-xs font-bold sm:bottom-[10%] sm:text-sm uppercase tracking-[0.3em] text-cream-light">
-                    {location}
-                  </p>
-                </m.div>
-
-                <m.div
-                  style={{ y: dropY, opacity: dropOpacity, zIndex: flapZ }}
-                  className="absolute inset-0"
-                >
+                  {/* Inside of the envelope, behind the paper. */}
                   <m.div
-                    style={{ rotateX: flapRotate, transformPerspective: 1200 }}
-                    className="absolute inset-x-0 top-0 h-[58%] origin-top [transform-style:preserve-3d]"
+                    style={{ y: dropY, opacity: dropOpacity }}
+                    className="absolute inset-0 rounded-md bg-pink-transition"
+                  />
+
+                  <m.div
+                    ref={paperRef}
+                    style={{ y: paperY, scaleX: paperScaleX, scaleY: paperScaleY }}
+                    className="absolute inset-x-[5%] bottom-[4%] top-[6%] z-10 rounded-sm bg-cream shadow-md"
+                  />
+                  {/* Kept apart from the paper so its text never stretches with it. */}
+                  <m.div
+                    style={{ y: previewY, opacity: previewOpacity }}
+                    className="absolute inset-x-[5%] bottom-[4%] top-[6%] z-10 flex flex-col items-center pt-[6%] text-center text-brown"
                   >
-                    <div className="absolute inset-0 bg-pink-light [backface-visibility:hidden] [clip-path:polygon(0_0,100%_0,50%_100%)]" />
-                    {/* Seen once the flap swings up, so its shape is mirrored. */}
-                    <div className="absolute inset-0 bg-pink-transition [backface-visibility:hidden] [clip-path:polygon(50%_0,100%_100%,0_100%)] [transform:rotateX(180deg)]" />
-                    <div className="absolute bottom-0 left-1/2 flex h-12 w-12 -translate-x-1/2 translate-y-1/2 items-center justify-center rounded-full bg-brown shadow-md ring-2 ring-brown-dark [backface-visibility:hidden] sm:h-20 sm:w-20 sm:ring-4">
-                      <Image src="/images/PH2026Logo.svg" alt="" width={44} height={42} className="h-7 w-7 object-contain sm:h-11 sm:w-11" />
-                    </div>
+                    <p className="font-sans text-sm italic sm:text-base">You&rsquo;re invited to</p>
+                    <p className="font-sans text-2xl font-bold uppercase sm:text-4xl">{name}</p>
+                  </m.div>
+
+                  {/* The pocket: side flaps with a V cut out, then the bottom flap. */}
+                  <m.div style={{ y: dropY, opacity: dropOpacity }} className="absolute inset-0 z-20">
+                    <div className="absolute inset-0 rounded-md bg-pink [clip-path:polygon(0_0,50%_52%,100%_0,100%_100%,0_100%)]" />
+                    <div className="absolute inset-0 rounded-md bg-pink-accent [clip-path:polygon(0_100%,50%_42%,100%_100%)]" />
+                    <p className="absolute inset-x-0 bottom-[7%] text-center font-sans text-xs font-bold sm:bottom-[10%] sm:text-sm uppercase tracking-[0.3em] text-cream-light">
+                      {location}
+                    </p>
+                  </m.div>
+
+                  <m.div
+                    style={{ y: dropY, opacity: dropOpacity, zIndex: flapZ }}
+                    className="absolute inset-0"
+                  >
+                    <m.div
+                      style={{ rotateX: flapRotate, transformPerspective: 1200 }}
+                      className="absolute inset-x-0 top-0 h-[58%] origin-top [transform-style:preserve-3d]"
+                    >
+                      <div className="absolute inset-0 bg-pink-light [backface-visibility:hidden] [clip-path:polygon(0_0,100%_0,50%_100%)]" />
+                      {/* Seen once the flap swings up, so its shape is mirrored. */}
+                      <div className="absolute inset-0 bg-pink-transition [backface-visibility:hidden] [clip-path:polygon(50%_0,100%_100%,0_100%)] [transform:rotateX(180deg)]" />
+                      <div className="absolute bottom-0 left-1/2 flex h-12 w-12 -translate-x-1/2 translate-y-1/2 items-center justify-center rounded-full bg-brown shadow-md ring-2 ring-brown-dark [backface-visibility:hidden] sm:h-20 sm:w-20 sm:ring-4">
+                        <Image src="/images/PH2026Logo.svg" alt="" width={44} height={42} className="h-7 w-7 object-contain sm:h-11 sm:w-11" />
+                      </div>
+                    </m.div>
                   </m.div>
                 </m.div>
               </div>
             </div>
 
             <m.p
-              style={{ opacity: hintOpacity }}
+              style={{ opacity: openHintOpacity }}
               className="font-sans text-sm font-bold uppercase tracking-[0.2em] text-brown"
             >
               Scroll to open
